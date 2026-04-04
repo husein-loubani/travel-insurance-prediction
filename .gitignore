@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data (keep raw in repo, ignore large or sensitive)
+# data/raw/*.csv  # uncomment to exclude raw data from version control
+
+# Model artefacts
+models/*.pkl
+models/*.joblib
+models/*.pickle
+
+# Reports / outputs (optional — figures are kept)
+# reports/figures/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Ruff / linting
+.ruff_cache/
+
+# Coverage
+.coverage
+htmlcov/
