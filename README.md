@@ -4,6 +4,10 @@
 
 Binary classification: predict whether a customer will purchase a travel insurance package.
 
+### Interactive Dashboard
+
+- [ML Pipeline Dashboard](https://husein-loubani.github.io/travel-insurance-prediction/reports/figures/dashboard_travel_insurance.html)
+
 ---
 
 ## Project Goal
