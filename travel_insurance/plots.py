@@ -572,3 +572,243 @@ def save_figure(fig: Figure, name: str, figures_dir) -> None:
     from pathlib import Path
     Path(figures_dir).mkdir(parents=True, exist_ok=True)
     fig.savefig(Path(figures_dir) / f"{name}.png", dpi=150, bbox_inches="tight")
+
+
+# ── Interactive Plotly Dashboard ─────────────────────────────────────────────
+
+def dashboard_travel_insurance(
+    df: pd.DataFrame,
+    cv_results: pd.DataFrame,
+    final_metrics: dict,
+    final_models: dict,
+    X_test: pd.DataFrame,
+    y_test: pd.Series,
+    coef_df: pd.DataFrame,
+    *,
+    out_path: str | None = None,
+) -> "plotly.graph_objects.Figure":
+    """Interactive dark-themed executive dashboard for Travel Insurance Prediction."""
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+    from sklearn.metrics import roc_curve, precision_recall_curve, auc as sk_auc
+
+    # ---- KPIs ----
+    n_total = len(df)
+    purchase_rate = df[TARGET].mean()
+    n_buyers = int(df[TARGET].sum())
+    n_features = len([c for c in df.columns if c != TARGET])
+
+    top_model_name = sorted(final_metrics, key=lambda k: final_metrics[k].get("roc_auc", 0), reverse=True)[0]
+    top_m = final_metrics[top_model_name]
+    top_auc = top_m.get("roc_auc", 0)
+    top_f1 = top_m.get("f1", 0)
+
+    # ---- Build subplots ----
+    fig = make_subplots(
+        rows=3, cols=2,
+        row_heights=[0.33, 0.33, 0.34],
+        column_widths=[0.5, 0.5],
+        specs=[
+            [{"type": "xy"}, {"type": "xy"}],
+            [{"type": "xy"}, {"type": "xy"}],
+            [{"type": "xy"}, {"type": "table"}],
+        ],
+        vertical_spacing=0.10,
+        horizontal_spacing=0.08,
+        subplot_titles=[
+            "Cross-Validation: ROC-AUC Comparison",
+            "ROC Curves (Test Set)",
+            "Feature Coefficients (Logistic Regression)",
+            "Precision-Recall Curves (Test Set)",
+            "Confusion Matrix: " + top_model_name,
+            "Final Test Metrics",
+        ],
+    )
+
+    # ---- Row 1, Col 1: CV comparison bar chart ----
+    cv_col = [c for c in cv_results.columns if "mean" in c][0]
+    cv_std_col = [c for c in cv_results.columns if "std" in c][0]
+    cv_sorted = cv_results.sort_values(cv_col, ascending=True).reset_index()
+
+    bar_colors = ["#6366f1" if i >= len(cv_sorted) - 2 else "#64748b"
+                  for i in range(len(cv_sorted))]
+
+    fig.add_trace(
+        go.Bar(
+            y=cv_sorted["model"],
+            x=cv_sorted[cv_col],
+            orientation="h",
+            marker_color=bar_colors,
+            error_x=dict(type="data", array=cv_sorted[cv_std_col].values, color="#94a3b8"),
+            text=[f"{v:.4f}" for v in cv_sorted[cv_col]],
+            textposition="outside",
+            textfont=dict(size=11),
+            showlegend=False,
+        ),
+        row=1, col=1,
+    )
+    fig.update_xaxes(title_text="ROC-AUC", range=[0, 1.05], row=1, col=1)
+
+    # ---- Row 1, Col 2: ROC curves ----
+    roc_colors = ["#f97316", "#06b6d4", "#a78bfa", "#f43f5e", "#22c55e"]
+    for i, (name, model) in enumerate(final_models.items()):
+        y_score = (model.predict_proba(X_test)[:, 1]
+                   if hasattr(model, "predict_proba")
+                   else model.decision_function(X_test))
+        fpr, tpr, _ = roc_curve(y_test, y_score)
+        area = sk_auc(fpr, tpr)
+        fig.add_trace(
+            go.Scatter(
+                x=fpr, y=tpr,
+                mode="lines",
+                name=f"{name} (AUC={area:.3f})",
+                line=dict(color=roc_colors[i % len(roc_colors)], width=2.5),
+            ),
+            row=1, col=2,
+        )
+    fig.add_trace(
+        go.Scatter(x=[0, 1], y=[0, 1], mode="lines",
+                   line=dict(color="#475569", dash="dash", width=1),
+                   showlegend=False),
+        row=1, col=2,
+    )
+    fig.update_xaxes(title_text="FPR", row=1, col=2)
+    fig.update_yaxes(title_text="TPR", row=1, col=2)
+
+    # ---- Row 2, Col 1: Feature coefficients ----
+    coef_sorted = coef_df.sort_values("coefficient", ascending=True)
+    bar_coef_colors = ["#f97316" if v > 0 else "#6366f1" for v in coef_sorted["coefficient"]]
+
+    fig.add_trace(
+        go.Bar(
+            y=coef_sorted["feature"],
+            x=coef_sorted["coefficient"],
+            orientation="h",
+            marker_color=bar_coef_colors,
+            text=[f"{v:+.3f}" for v in coef_sorted["coefficient"]],
+            textposition="outside",
+            textfont=dict(size=10),
+            showlegend=False,
+        ),
+        row=2, col=1,
+    )
+    fig.update_xaxes(title_text="Coefficient (log-odds)", row=2, col=1)
+
+    # ---- Row 2, Col 2: Precision-Recall curves ----
+    baseline_rate = y_test.mean()
+    for i, (name, model) in enumerate(final_models.items()):
+        y_score = (model.predict_proba(X_test)[:, 1]
+                   if hasattr(model, "predict_proba")
+                   else model.decision_function(X_test))
+        prec, rec, _ = precision_recall_curve(y_test, y_score)
+        ap = sk_auc(rec, prec)
+        fig.add_trace(
+            go.Scatter(
+                x=rec, y=prec,
+                mode="lines",
+                name=f"{name} (AP={ap:.3f})",
+                line=dict(color=roc_colors[i % len(roc_colors)], width=2.5),
+                showlegend=False,
+            ),
+            row=2, col=2,
+        )
+    fig.add_trace(
+        go.Scatter(x=[0, 1], y=[baseline_rate, baseline_rate], mode="lines",
+                   line=dict(color="#475569", dash="dash", width=1),
+                   showlegend=False),
+        row=2, col=2,
+    )
+    fig.update_xaxes(title_text="Recall", row=2, col=2)
+    fig.update_yaxes(title_text="Precision", row=2, col=2)
+
+    # ---- Row 3, Col 1: Confusion matrix heatmap ----
+    cm = top_m["confusion_matrix"]
+    labels = ["No Insurance", "Purchased"]
+    cm_text = [[f"{cm[i][j]}" for j in range(2)] for i in range(2)]
+
+    fig.add_trace(
+        go.Heatmap(
+            z=cm,
+            x=labels,
+            y=labels,
+            text=cm_text,
+            texttemplate="%{text}",
+            textfont=dict(size=16, color="white"),
+            colorscale=[[0, "#1e1b4b"], [1, "#6366f1"]],
+            showscale=False,
+        ),
+        row=3, col=1,
+    )
+    fig.update_xaxes(title_text="Predicted", row=3, col=1)
+    fig.update_yaxes(title_text="Actual", autorange="reversed", row=3, col=1)
+
+    # ---- Row 3, Col 2: Final metrics table ----
+    model_names = list(final_metrics.keys())
+    metric_keys = ["roc_auc", "pr_auc", "f1", "precision", "recall", "balanced_accuracy"]
+    table_vals = {k: [] for k in ["Model"] + metric_keys}
+    for name in model_names:
+        table_vals["Model"].append(name)
+        for mk in metric_keys:
+            table_vals[mk].append(f"{final_metrics[name].get(mk, 0):.4f}")
+
+    header_labels = ["Model", "ROC-AUC", "PR-AUC", "F1", "Precision", "Recall", "Bal. Acc."]
+    fig.add_trace(
+        go.Table(
+            header=dict(
+                values=[f"<b>{h}</b>" for h in header_labels],
+                fill_color="#1e1b4b",
+                font=dict(color="white", size=12),
+                align="center",
+                height=32,
+            ),
+            cells=dict(
+                values=[table_vals[k] for k in ["Model"] + metric_keys],
+                fill_color=[["#2d2a5e"] * len(model_names)],
+                font=dict(color="white", size=11),
+                align="center",
+                height=28,
+            ),
+        ),
+        row=3, col=2,
+    )
+
+    # ---- Layout ----
+    fig.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="#0f0e1a",
+        plot_bgcolor="#1a1933",
+        font=dict(family="Inter, system-ui, sans-serif", color="#e2e8f0", size=13),
+        title=dict(
+            text=(
+                "<b>Travel Insurance Prediction — ML Dashboard</b>"
+                f"<br><span style='font-size:13px; color:#94a3b8'>"
+                f"Samples: {n_total:,} | Purchase Rate: {purchase_rate:.1%} "
+                f"({n_buyers:,} buyers) | Features: {n_features} | "
+                f"Best Model: {top_model_name} "
+                f"(ROC-AUC: {top_auc:.4f}, F1: {top_f1:.4f})</span>"
+            ),
+            font=dict(size=18, color="#818cf8"),
+            x=0.5,
+            xanchor="center",
+        ),
+        height=1150,
+        margin=dict(t=100, b=40, l=60, r=60),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.75,
+            font=dict(size=11),
+        ),
+    )
+
+    for ann in fig.layout.annotations:
+        ann.font = dict(size=14, color="#a5b4fc")
+
+    if out_path is not None:
+        from pathlib import Path
+        Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+        fig.write_html(str(out_path), include_plotlyjs=True)
+
+    return fig
