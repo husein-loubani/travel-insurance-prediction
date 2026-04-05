@@ -780,7 +780,7 @@ def dashboard_travel_insurance(
         font=dict(family="Inter, system-ui, sans-serif", color="#e2e8f0", size=13),
         title=dict(
             text=(
-                "<b>Travel Insurance Prediction — ML Dashboard</b>"
+                "<b>Travel Insurance Prediction: ML Dashboard</b>"
                 f"<br><span style='font-size:13px; color:#94a3b8'>"
                 f"Samples: {n_total:,} | Purchase Rate: {purchase_rate:.1%} "
                 f"({n_buyers:,} buyers) | Features: {n_features} | "
