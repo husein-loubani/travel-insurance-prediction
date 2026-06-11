@@ -1,6 +1,6 @@
 # Travel Insurance Prediction
 
-**Module 3 · Sprint 1: Supervised Machine Learning** | Turing College · Data Science Programme
+**Module 3 · Sprint 1: Supervised Machine Learning** | Turing College · Data Science Program
 
 Binary classification: predict whether a customer will purchase a travel insurance package.
 
@@ -12,7 +12,7 @@ Binary classification: predict whether a customer will purchase a travel insuran
 
 ## Project Goal
 
-Given demographic and behavioural features, build a model that predicts the probability of travel insurance purchase. The model supports targeted marketing by identifying high-probability buyers and reducing wasted outreach.
+Given demographic and behavioral features, build a model that predicts the probability of travel insurance purchase. The model supports targeted marketing by identifying high-probability buyers and reducing wasted outreach.
 
 **Primary metric:** ROC-AUC, robust to the ~35.7% positive rate.
 **Secondary metrics:** PR-AUC, balanced accuracy, F1, recall, precision.
@@ -57,7 +57,7 @@ See [`references/data_dictionary.md`](references/data_dictionary.md) for full va
 │   ├── config.py               <- Constants, seeds, feature lists, grids
 │   ├── dataset.py              <- Load, audit, clean, split
 │   ├── features.py             <- ColumnTransformer and Pipeline factory
-│   ├── plots.py                <- All visualisation functions
+│   ├── plots.py                <- All visualization functions
 │   ├── statistics.py           <- Hypothesis test wrappers
 │   └── modeling/
 │       ├── train.py            <- Cross-validation comparison
@@ -147,7 +147,7 @@ The notebook runs top-to-bottom. All random seeds are fixed via `RANDOM_SEED = 4
 ## Key Findings
 
 - Annual income is the strongest individual predictor. Buyers earn significantly more on average (Welch t-test, p < 0.001).
-- International travel experience is the strongest categorical predictor. Customers who have travelled abroad purchase at a ~40 percentage-point higher rate (two-proportion z-test, p < 0.001).
+- International travel experience is the strongest categorical predictor. Customers who have traveled abroad purchase at a ~40 percentage-point higher rate (two-proportion z-test, p < 0.001).
 - Age shows a statistically significant but practically small difference between buyers and non-buyers.
 - 738 exact duplicate rows (37.1%) were removed before splitting. Statistical tests confirmed the duplicates were not a systematically biased subset.
 - SVM and KNN both outperform the LR baseline after tuning. The optimal operating threshold should be set using the PR curve and the business cost ratio between a missed sale and a wasted contact.

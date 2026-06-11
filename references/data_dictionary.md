@@ -18,7 +18,7 @@
 | `FamilyMembers` | Integer | 2–9 | Total number of family members |
 | `ChronicDiseases` | Binary int | `0`, `1` | 1 = customer has a chronic condition (diabetes, hypertension, asthma, etc.) |
 | `FrequentFlyer` | Binary string | `Yes`, `No` | Derived label: `Yes` if customer booked >= 4 flights in 2017–2019 |
-| `EverTravelledAbroad` | Binary string | `Yes`, `No` | Whether the customer has ever travelled internationally |
+| `EverTravelledAbroad` | Binary string | `Yes`, `No` | Whether the customer has ever traveled internationally |
 | `TravelInsurance` | Binary int | `0`, `1` | **Target**: 1 = purchased the 2019 travel insurance package |
 
 ---
@@ -40,7 +40,7 @@ Primary evaluation metric: **ROC-AUC**.
 - `AnnualIncome` is rounded to the nearest Rs 50,000. This introduces discretisation error near breakpoints but is not a data quality problem; it reflects how income was collected.
 - `FrequentFlyer` is a derived binary label; the raw booking counts are not available.
 - `ChronicDiseases` shows near-zero correlation with purchase despite the intuition that health risk drives insurance uptake. This is a genuine empirical finding, not a data error.
-- All data is from 2019 (pre-COVID). Customer behaviour and travel norms may have shifted substantially post-pandemic.
+- All data is from 2019 (pre-COVID). Customer behavior and travel norms may have shifted substantially post-pandemic.
 
 ---
 

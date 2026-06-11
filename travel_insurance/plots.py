@@ -1,14 +1,14 @@
 """
 plots.py
 --------
-All Matplotlib / Seaborn visualisation functions.
+All Matplotlib / Seaborn visualization functions.
 
 CCDS role: code to create visualizations.
 
 Design rules:
   - Every function returns a Figure without calling plt.show().
   - apply_global_style() sets project-wide aesthetics; call once at notebook start.
-  - No hardcoded colours: all palettes come from travel_insurance.config.
+  - No hardcoded colors: all palettes come from travel_insurance.config.
   - Axes always carry title, x-label, and y-label.
   - Percentage annotations used wherever a relative comparison is more informative
     than raw counts (e.g., purchase rates, class balance, CV scores).
@@ -209,10 +209,10 @@ def plot_categorical_distributions(df: pd.DataFrame, features: list[str]) -> Fig
 
         # Overall purchase rate reference line
         overall = df[TARGET].mean() * 100
-        ax.axhline(overall, color="grey", linestyle=":", linewidth=1.2)
+        ax.axhline(overall, color="gray", linestyle=":", linewidth=1.2)
         ax.text(
             len(rate_df) - 0.5, overall + 1,
-            f"Overall {overall:.1f}%", ha="right", fontsize=8, color="grey",
+            f"Overall {overall:.1f}%", ha="right", fontsize=8, color="gray",
         )
 
     for ax in axes_flat[n:]:
@@ -314,7 +314,7 @@ def plot_correlation_heatmap(df: pd.DataFrame, features: list[str]) -> Figure:
 
 def plot_income_age_scatter(df: pd.DataFrame) -> Figure:
     """
-    Scatter of age vs. annual_income coloured by target class.
+    Scatter of age vs. annual_income colored by target class.
     KDE density contours overlaid per class to reveal distributional overlap.
     """
     fig, ax = plt.subplots(figsize=(8, 5))
@@ -396,7 +396,7 @@ def plot_roc_curves(models: dict, X_test: pd.DataFrame, y_test: pd.Series) -> Fi
                 label=f"{name}  (AUC = {auc(fpr, tpr):.3f})")
 
     ax.plot([0, 1], [0, 1], "k--", lw=1, alpha=0.5, label="Random classifier")
-    ax.fill_between([0, 1], [0, 1], alpha=0.04, color="grey")
+    ax.fill_between([0, 1], [0, 1], alpha=0.04, color="gray")
     ax.set_xlabel("False Positive Rate", fontsize=11)
     ax.set_ylabel("True Positive Rate", fontsize=11)
     ax.set_title("ROC Curves: Model Comparison", fontsize=12)
@@ -420,7 +420,7 @@ def plot_pr_curves(models: dict, X_test: pd.DataFrame, y_test: pd.Series) -> Fig
         ap = auc(rec, prec)
         ax.plot(rec, prec, color=color, lw=2, label=f"{name}  (AP = {ap:.3f})")
 
-    ax.axhline(baseline, color="grey", ls="--", lw=1.2,
+    ax.axhline(baseline, color="gray", ls="--", lw=1.2,
                label=f"No-skill baseline ({baseline:.2f})")
     ax.set_xlabel("Recall", fontsize=11)
     ax.set_ylabel("Precision", fontsize=11)

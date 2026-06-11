@@ -3,7 +3,7 @@ features.py
 -----------
 Preprocessing pipeline construction for the Travel Insurance dataset.
 
-CCDS role: create features for modelling.
+CCDS role: create features for modeling.
 
 All transformations are encapsulated in a leakage-safe ColumnTransformer.
 The transformer is always fitted only on training data and applied to

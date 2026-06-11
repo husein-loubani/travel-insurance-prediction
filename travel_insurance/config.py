@@ -1,7 +1,7 @@
 """
 config.py
 ---------
-Global constants, feature lists, colour palette, and model hyperparameter grids
+Global constants, feature lists, color palette, and model hyperparameter grids
 for the Travel Insurance Prediction project.
 
 All magic numbers and strings are centralised here so the notebook contains no
@@ -51,7 +51,7 @@ ALL_FEATURES = NUMERICAL_FEATURES + CATEGORICAL_FEATURES
 # ── Train / test split ───────────────────────────────────────────────────────
 TEST_SIZE = 0.20   # 80/20 stratified split; test set is held out until final evaluation
 
-# ── Colour palette ───────────────────────────────────────────────────────────
+# ── Color palette ───────────────────────────────────────────────────────────
 # Two-class palette: class 0 (no insurance) → muted blue, class 1 → coral
 PALETTE = {0: "#4C72B0", 1: "#DD8452"}
 PALETTE_LIST = ["#4C72B0", "#DD8452"]
