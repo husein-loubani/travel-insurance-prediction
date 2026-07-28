@@ -16,7 +16,6 @@ from scipy import stats
 
 from travel_insurance.config import ALPHA, CONFIDENCE_LEVEL
 
-
 # ── Two-sample t-test ─────────────────────────────────────────────────────────
 
 def two_sample_ttest(

@@ -21,8 +21,6 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 
-from travel_insurance.config import TARGET
-
 
 def evaluate_model(
     model,
@@ -65,7 +63,7 @@ def evaluate_model(
         print(f"  ROC-AUC           : {metrics['roc_auc']:.4f}")
         print(f"  PR-AUC            : {metrics['pr_auc']:.4f}")
     cm = metrics["confusion_matrix"]
-    print(f"\n  Confusion matrix:")
+    print("\n  Confusion matrix:")
     print(f"    TN={cm[0,0]:4d}  FP={cm[0,1]:4d}")
     print(f"    FN={cm[1,0]:4d}  TP={cm[1,1]:4d}")
     print(sep)

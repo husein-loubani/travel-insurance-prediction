@@ -12,9 +12,14 @@ validation / test data; never the reverse.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, StandardScaler
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 # ── Feature groups ────────────────────────────────────────────────────────────

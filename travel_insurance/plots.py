@@ -16,20 +16,23 @@ Design rules:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import matplotlib.pyplot as plt
 import numpy as np
+
+if TYPE_CHECKING:
+    import plotly.graph_objects
 import pandas as pd
 import seaborn as sns
 from matplotlib.figure import Figure
 from sklearn.metrics import (
     auc,
-    confusion_matrix as sk_confusion_matrix,
     precision_recall_curve,
     roc_curve,
 )
 
 from travel_insurance.config import CMAP_DIV, CMAP_SEQ, PALETTE, PALETTE_LIST, TARGET
-
 
 # ── Global style ──────────────────────────────────────────────────────────────
 
@@ -100,7 +103,7 @@ def plot_stratification_check(train_df: pd.DataFrame, test_df: pd.DataFrame) -> 
             "Class": ["No (0)", "Yes (1)"],
             "Count": counts.values,
         })
-        bars = sns.barplot(
+        sns.barplot(
             data=bar_df, x="Class", y="Count", hue="Class",
             palette={"No (0)": PALETTE[0], "Yes (1)": PALETTE[1]},
             ax=ax, width=0.45, legend=False,
@@ -235,7 +238,6 @@ def plot_boxplots_by_target(df: pd.DataFrame, features: list[str]) -> Figure:
     fig, axes = plt.subplots(nrows, 2, figsize=(13, 4.5 * nrows))
     axes = axes.flatten()
 
-    hue_order = [0, 1]
     hue_labels = {0: "No Insurance", 1: "Purchased"}
 
     for ax, feat in zip(axes, features):
@@ -590,7 +592,8 @@ def dashboard_travel_insurance(
     """Interactive dark-themed executive dashboard for Travel Insurance Prediction."""
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
-    from sklearn.metrics import roc_curve, precision_recall_curve, auc as sk_auc
+    from sklearn.metrics import auc as sk_auc
+    from sklearn.metrics import precision_recall_curve, roc_curve
 
     # ---- KPIs ----
     n_total = len(df)

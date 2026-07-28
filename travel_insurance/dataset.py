@@ -17,15 +17,14 @@ from scipy.stats import chi2_contingency
 from sklearn.model_selection import train_test_split
 
 from travel_insurance.config import (
-    RANDOM_SEED,
-    TEST_SIZE,
-    TARGET,
-    INDEX_COL,
-    CATEGORICAL_FEATURES,
-    NUMERICAL_FEATURES,
     ALPHA,
+    CATEGORICAL_FEATURES,
+    INDEX_COL,
+    NUMERICAL_FEATURES,
+    RANDOM_SEED,
+    TARGET,
+    TEST_SIZE,
 )
-
 
 # ── Loading ───────────────────────────────────────────────────────────────────
 
